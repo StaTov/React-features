@@ -1,8 +1,13 @@
 import {
-  useEffect, useRef, useState,
+  useEffect, useState,
 } from 'react';
 import axios from 'axios';
+import {
+  Route, Routes, useSearchParams,
+} from 'react-router-dom';
+import PageButtons from './component/PageButtons';
 
+const URL = 'https://jsonplaceholder.typicode.com/photos?_limit=10&_page=';
 interface IData {
   albumId: number,
   id: number,
@@ -12,42 +17,30 @@ interface IData {
 }
 
 function App() {
-  const page = useRef(1);
-  const totalCount = useRef(0);
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get('p');
   const [photo, setPhoto] = useState<IData[]>([]);
-  const [fetching, setFetching] = useState(true);
   useEffect(() => {
-    if (fetching) {
-      axios.get(`https://jsonplaceholder.typicode.com/photos?_limit=10&_page=${page.current}`)
-        .then((res) => {
-          totalCount.current = res.headers['x-total-count'];
-          setPhoto((prev) => [...prev, ...res.data]);
-        })
-        .finally(() => {
-          page.current += 1;
-          setFetching(false);
-        });
-    }
-  }, [fetching]);
-  const scrollHandler = () => {
-    const { documentElement } = document;
-    if ((documentElement.scrollHeight - (documentElement.scrollTop + window.innerHeight) < 100)
-      && totalCount.current > photo.length) {
-      setFetching(true);
-    }
-  };
-  useEffect(() => {
-    document.addEventListener('scroll', scrollHandler);
-    return () => document.removeEventListener('scroll', scrollHandler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    axios.get(URL + page)
+      .then((res) => {
+        setPhoto(res.data);
+      });
+  }, [page]);
   return (
     <>
-      {photo.map((e) => (
-        <div key={e.id}>
-          <img src={e.thumbnailUrl} alt="" />
-        </div>
-      ))}
+      <PageButtons />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            photo.map((e) => (
+              <div key={e.id}>
+                <img src={e.thumbnailUrl} alt="" />
+              </div>
+            ))
+          }
+        />
+      </Routes>
     </>
   );
 }
