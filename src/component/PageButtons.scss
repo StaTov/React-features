@@ -1,0 +1,28 @@
+.container__button {
+display: flex;
+gap: 10px;
+align-items: flex-end;
+}
+
+button {
+    border: none;
+    border-radius: 50%;
+    height: 35px;
+    width: 35px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+    &:hover {
+        opacity: 0.7;
+    }
+}
+.pageButton:disabled {
+    background-color: rgb(249, 249, 249);
+    color: rgb(0, 0, 0);
+    cursor: auto; 
+    &:hover {
+      opacity: 1;
+    }
+}
+.arrow {
+    background-color: rgba(245, 245, 245, 0);
+}
