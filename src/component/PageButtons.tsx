@@ -1,7 +1,7 @@
 import { useSearchParams } from 'react-router-dom';
 import './PageButtons.scss';
 
-function PageButtons() {
+const PageButtons = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page'));
   const limit = Number(searchParams.get('limit'));
@@ -9,23 +9,27 @@ function PageButtons() {
   const maxButton = totalData / limit;
   const countButton = 5;
 
-  function createButtons(num: number, length = 5, total = 500) {
-    if (total < num) {
+  function createButtons(
+    pageNumber: number,
+    manyButtons: number,
+    totalButtons :number,
+  ) {
+    if (totalButtons < pageNumber) {
       return [];
     }
 
-    const middle = Math.floor(length / 2);
-    const buttons = Array.from({ length });
+    const middle = Math.floor(manyButtons / 2);
+    const buttons = Array.from({ length: manyButtons });
 
-    if (num <= middle) {
+    if (pageNumber <= middle) {
       return buttons.map((_, i) => i + 1);
     }
 
-    if (total < num + middle) {
-      return buttons.map((_, i) => total - length + 1 + i);
+    if (totalButtons < pageNumber + middle) {
+      return buttons.map((_, i) => totalButtons - manyButtons + 1 + i);
     }
 
-    return buttons.map((_, i) => num - middle + i);
+    return buttons.map((_, i) => pageNumber - middle + i);
   }
   const buttons = createButtons(page, countButton, maxButton);
   return (
@@ -63,7 +67,6 @@ function PageButtons() {
         </>
       )}
       {buttons.map((n) => (
-
         <button
           key={n}
           disabled={page === n}
@@ -115,5 +118,5 @@ function PageButtons() {
       </button>
     </div>
   );
-}
+};
 export default PageButtons;
