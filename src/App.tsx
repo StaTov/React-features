@@ -1,55 +1,60 @@
+/* eslint-disable react/jsx-props-no-spreading */
+import { Box } from '@mui/material';
 import {
-  useEffect, useRef, useState,
-} from 'react';
-import axios from 'axios';
+  Formik, Form,
+} from 'formik';
+import { FC, useState } from 'react';
+import * as Yup from 'yup';
+import { formStyle } from './style';
+import AmountInput from './UI/AmountInput/AmountInput';
+import AmountInputWithSpace from './UI/AmountInputWithSpace/AmountInputWithSpace';
+import MyInput from './UI/MyInput/MyInput';
 
-interface IData {
-  albumId: number,
-  id: number,
-  title: string,
-  url: string,
-  thumbnailUrl: string
-}
-
-function App() {
-  const page = useRef(1);
-  const totalCount = useRef(0);
-  const [photo, setPhoto] = useState<IData[]>([]);
-  const [fetching, setFetching] = useState(true);
-  useEffect(() => {
-    if (fetching) {
-      axios.get(`https://jsonplaceholder.typicode.com/photos?_limit=10&_page=${page.current}`)
-        .then((res) => {
-          totalCount.current = res.headers['x-total-count'];
-          setPhoto((prev) => [...prev, ...res.data]);
-        })
-        .finally(() => {
-          page.current += 1;
-          setFetching(false);
-        });
-    }
-  }, [fetching]);
-  const scrollHandler = () => {
-    const { documentElement } = document;
-    if ((documentElement.scrollHeight - (documentElement.scrollTop + window.innerHeight) < 100)
-      && totalCount.current > photo.length) {
-      setFetching(true);
-    }
-  };
-  useEffect(() => {
-    document.addEventListener('scroll', scrollHandler);
-    return () => document.removeEventListener('scroll', scrollHandler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+const App: FC = () => {
+  const [error, setError] = useState<string>('');
   return (
     <>
-      {photo.map((e) => (
-        <div key={e.id}>
-          <img src={e.thumbnailUrl} alt="" />
-        </div>
-      ))}
+      <Formik
+        initialValues={{
+          myInput: '',
+        }}
+        validationSchema={
+          Yup.object({
+            myInput: Yup.string()
+              .max(24, 'Must be 20 number or less')
+              .required('Required'),
+          })
+        }
+        onSubmit={(values, { setSubmitting }) => {
+          // const result = { myInput: values.myInput.replace(/\D/g, '') };
+          setSubmitting(false);
+        }}
+      >
+        {(formik) => {
+          return (
+            <Form>
+              <Box sx={formStyle}>
+                <MyInput
+                  type="text"
+                  label="***** **** * *** *******"
+                  name="myInput"
+                  error={error}
+                />
+                <AmountInput
+                  name="amount"
+                  label="введите сумму"
+                />
+                <AmountInputWithSpace
+                  name="amountSpace"
+                  label="введите сумму"
+                />
+                <button type="submit">Submit</button>
+              </Box>
+            </Form>
+          );
+        }}
+      </Formik>
     </>
   );
-}
-
+};
 export default App;

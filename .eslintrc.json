@@ -4,9 +4,6 @@
         "es2021": true
     },
     "extends": [
-        "airbnb", 
-        "airbnb/hooks",
-        "airbnb-typescript",
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:react/recommended"
@@ -24,6 +21,7 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "react/function-component-definition": [2, { "namedComponents": "arrow-function" }],
         "react/require-default-props": "off",
         "react/react-in-jsx-scope": "off",
         "react/jsx-uses-react": "off",
