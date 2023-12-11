@@ -48,6 +48,7 @@ const App: FC = () => {
                   name="amountSpace"
                   label="введите сумму"
                 />
+                <input type="text" />
                 <button type="submit">Submit</button>
               </Box>
             </Form>

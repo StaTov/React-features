@@ -70,6 +70,12 @@ const AmountInputWithSpace = ({
   const getLengthNoFlat = (str: string): number => {
     return str.replace(/\.\d{0,}/, '').length;
   }
+  const getLengthForDelete = (str: string): number => {
+    if (str.match(/\.\d{0,}/)) {
+      return str.replace(/\.\d{0,}/, '').length + 1
+    }
+    return str.length;
+  }
   const getClaerLength = (str: string): number => {
     const noSpace = clearSpaces(str);
     return getLengthNoFlat(noSpace);
@@ -79,6 +85,8 @@ const AmountInputWithSpace = ({
   }
 
   const setMask = (string: string): string => {
+
+
     let isDot = false;
     const result = [];
     const typeSpaces = getLengthNoFlat(string) % 3;
@@ -92,7 +100,9 @@ const AmountInputWithSpace = ({
         isDot = true;
         continue
       }
-      if (maskSpacesAmount[typeSpaces].includes(i) && !isDot) {
+      if (maskSpacesAmount[typeSpaces].includes(i)
+        && !isDot
+      ) {
         result.push(' ')
       }
     }
@@ -100,13 +110,22 @@ const AmountInputWithSpace = ({
   }
 
   const handleChange = (event: TEvent) => {
-    
-    const rawValue = event.target.value;
+
+    let rawValue = event.target.value;
     const cursorPosition = event.target.selectionStart;
     const typeInputEvent = event.nativeEvent.inputType;
     if (cursorPosition === null || rawValue.length > 15) {
       return;
     }
+
+    if (typeInputEvent === 'deleteContentForward' &&
+      [4, 8, 12].includes(getLengthForDelete(rawValue) - cursorPosition)
+    ) {
+      const arr = rawValue.split('')
+      arr.splice(cursorPosition, 1)
+      rawValue = arr.join('')
+    }
+
     // удалить пробелы 
     let resultValue = clearSpaces(rawValue)
     // удалить все кроме цифр и '.'
@@ -119,22 +138,18 @@ const AmountInputWithSpace = ({
     resultValue = getHundredths(resultValue)
     // Запертить больше одного '0' в начале
     resultValue = deleteFirstZero(resultValue)
-
+    // приментиь маску
     resultValue = setMask(resultValue)
 
     setValue(resultValue)
 
     setPosition(() => {
       const length = getClaerLength(rawValue)
-      // удалить del
-      if (typeInputEvent === 'deleteContentForward' && !resultValue[cursorPosition]
-      ) {
-        console.log('X', resultValue[cursorPosition])
-        return cursorPosition + 1;
-      }
-      // ввод текста [4, 8, 12, 16, 20]
+      // ввод текста 
       if (typeInputEvent === 'insertText'
-        && [4, 7, 10, 13, 17].includes(length)) {
+        && [4, 7, 10, 13, 17].includes(length)
+        // && !rawValue.slice(cursorPosition).includes('.')
+      ) {
         return cursorPosition + 1;
       }
       //удаление Backspace 4, 8, 12, 16, 20
@@ -146,7 +161,6 @@ const AmountInputWithSpace = ({
       if (typeInputEvent === 'insertText'
         && cursorPosition === 2
         && rawValue[0] === '0') {
-        console.log('Amin')
         return cursorPosition - 1
       }
       return cursorPosition;
