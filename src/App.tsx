@@ -1,9 +1,5 @@
-import './style.css'
-
-const App = () => {
-
+export const App = () => {
   return (
-    <div className="container">
-    </div >)
+    <div>Hello World</div>
+  )
 }
-export default App;
