@@ -1,5 +1,9 @@
-export const App = () => {
-  return (
-    <div>Hello World</div>
-  )
+import MenuSelect from "./Components/MenuSelect";
+
+const country = ['Russia', 'China', 'Spane', 'Canada', 'USA']
+
+const App = () => {
+  return <MenuSelect placeholder='Choose country' data={country} />
 }
+
+export default App;
